@@ -18,35 +18,39 @@ def update_physics ():
         vel_y = -maxvel_y
     x += vel_x
     rect = pygame.Rect(x,y,30,30)
-    while block.colliderect(rect) == True:
-        if vel_x > 0:
-            x-=1.0
-        else:
-            x+=1.0
-        rect = pygame.Rect(x,y,30,30)
+    for block in blocks:
+        while block.colliderect(rect) == True:
+            if vel_x > 0:
+                x-=1.0
+            else:
+                x+=1.0
+            rect = pygame.Rect(x,y,30,30)
     y += vel_y
     rect = pygame.Rect(x,y,30,30)
-    while block.colliderect(rect) == True:
-        if vel_y > 0:
-            y-=1.0
-            state = 'on ground'
-        else:
-            y+=1.0
-        rect = pygame.Rect(x,y,30,30)
+    for block in blocks:
+        while block.colliderect(rect) == True:
+            if vel_y > 0:
+                y-=1.0
+                state = 'on ground'
+            else:
+                y+=1.0
+            rect = pygame.Rect(x,y,30,30)
     if y>470:
         state = 'on ground'
         y=470.0
 pygame.init ()
 screen = pygame.display.set_mode([800,600])
+blocks = []
 with open ("block.text", "r") as file:
-    line = file.readline ()
-    line = line.strip ()
-    values = line.split ()
-    left = int(values [0])
-    top = int(values [1])
-    width = int(values [2])
-    height = int(values [3])
-block = pygame.Rect(left,top,width,height)
+    for line in file:
+        line = line.strip ()
+        values = line.split ()
+        left = int(values [0])
+        top = int(values [1])
+        width = int(values [2])
+        height = int(values [3])
+        block = pygame.Rect(left,top,width,height)
+        blocks.append (block)
 running=True
 state = 'in air'
 x=100.0
@@ -59,7 +63,8 @@ maxvel_x = 15.0
 maxvel_y = 50.0
 while running==True:
     screen.fill((192,192,192))
-    pygame.draw.rect(screen, (0,0,255), block)
+    for block in blocks:
+        pygame.draw.rect(screen, (0,0,255), block)
     rect = pygame.Rect(x,y,30,30)
     pygame.draw.rect(screen,(255,0,0),rect)
     ground=pygame.Rect(0,500,800,13)
