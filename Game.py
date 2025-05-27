@@ -38,7 +38,15 @@ def update_physics ():
         y=470.0
 pygame.init ()
 screen = pygame.display.set_mode([800,600])
-block = pygame.Rect(500,460,80,40)
+with open ("block.text", "r") as file:
+    line = file.readline ()
+    line = line.strip ()
+    values = line.split ()
+    left = int(values [0])
+    top = int(values [1])
+    width = int(values [2])
+    height = int(values [3])
+block = pygame.Rect(left,top,width,height)
 running=True
 state = 'in air'
 x=100.0
