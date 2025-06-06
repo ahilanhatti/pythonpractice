@@ -25,6 +25,10 @@ def update_physics ():
             else:
                 x+=1.0
             rect = pygame.Rect(x,y,30,30)
+    if x < 0:
+        x = 0.0
+        vel_x=0.0
+        acc_x=0.0
     y += vel_y
     rect = pygame.Rect(x,y,30,30)
     for block in blocks:
@@ -61,12 +65,19 @@ acc_x = 0.0
 acc_y = 10.0
 maxvel_x = 15.0
 maxvel_y = 50.0
+scroll = 0.0
 while running==True:
     screen.fill((192,192,192))
+    if x > 400+scroll:
+        scroll += x-(400+scroll)
+    if x < 350+scroll:
+        scroll -= 350+scroll-x
+    if scroll < 0:
+        scroll = 0.0
     for block in blocks:
-        pygame.draw.rect(screen, (0,0,255), block)
+        pygame.draw.rect(screen, (0,0,255), block.move(-scroll, 0))
     rect = pygame.Rect(x,y,30,30)
-    pygame.draw.rect(screen,(255,0,0),rect)
+    pygame.draw.rect(screen,(255,0,0),rect.move(-scroll,0))
     ground=pygame.Rect(0,500,800,13)
     pygame.draw.rect(screen,(0,255,0), ground)
     pygame.display.flip()
