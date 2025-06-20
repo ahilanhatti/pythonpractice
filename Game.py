@@ -1,4 +1,7 @@
 import pygame
+class enemy:
+    def __init__(self):
+        pass
 def update_physics ():
     global scroll, acc_x, acc_y, vel_x, vel_y, x, y, state
     vel_x += acc_x
@@ -21,6 +24,8 @@ def update_physics ():
     for i,block in enumerate (blocks):
         while block.colliderect(rect) == True:
             if blocktypes[i] == "bad":
+                if not block.colliderect (rect.inflate(-5,-5)):
+                    break
                 state = 'in air'
                 x=100.0
                 y=100.0
@@ -41,8 +46,20 @@ def update_physics ():
         acc_x=0.0
     y += vel_y
     rect = pygame.Rect(x,y,30,30)
-    for block in blocks:
+    for i,block in enumerate (blocks):
         while block.colliderect(rect) == True:
+            if blocktypes[i] == "bad":
+                if not block.colliderect (rect.inflate(-5,-5)):
+                    break
+                state = 'in air'
+                x=100.0
+                y=100.0
+                vel_x = 0.0
+                vel_y = 0.0
+                acc_x = 0.0
+                acc_y = 10.0
+                scroll = 0.0
+                return
             if vel_y > 0:
                 y-=1.0
                 state = 'on ground'
@@ -67,6 +84,7 @@ with open ("block.text", "r") as file:
         block = pygame.Rect(left,top,width,height)
         blocks.append (block)
         blocktypes.append (values [4])
+triangleimage = pygame.image.load ("Triangle.png")
 running=True
 state = 'in air'
 x=100.0
@@ -90,7 +108,9 @@ while running==True:
         if blocktypes [i] == "good":
             pygame.draw.rect(screen, (0,0,255), block.move(-scroll, 0))
         elif blocktypes[i] == "bad":
-            pygame.draw.rect(screen, (0,0,0), block.move(-scroll, 0))
+            # pygame.draw.rect(screen, (0,255,0), block.move(-scroll, 0))
+            scaledimage = pygame.transform.scale (triangleimage, (block.width, block.height))
+            screen.blit (scaledimage, block.move(-scroll, 0))
     rect = pygame.Rect(x,y,30,30)
     pygame.draw.rect(screen,(255,0,0),rect.move(-scroll,0))
     ground=pygame.Rect(0,500,800,13)
