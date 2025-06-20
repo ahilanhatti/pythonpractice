@@ -1,6 +1,6 @@
 import pygame
 def update_physics ():
-    global acc_x, acc_y, vel_x, vel_y, x, y, state
+    global scroll, acc_x, acc_y, vel_x, vel_y, x, y, state
     vel_x += acc_x
     if vel_x > maxvel_x:
         vel_x = maxvel_x
@@ -18,8 +18,18 @@ def update_physics ():
         vel_y = -maxvel_y
     x += vel_x
     rect = pygame.Rect(x,y,30,30)
-    for block in blocks:
+    for i,block in enumerate (blocks):
         while block.colliderect(rect) == True:
+            if blocktypes[i] == "bad":
+                state = 'in air'
+                x=100.0
+                y=100.0
+                vel_x = 0.0
+                vel_y = 0.0
+                acc_x = 0.0
+                acc_y = 10.0
+                scroll = 0.0
+                return
             if vel_x > 0:
                 x-=1.0
             else:
@@ -45,6 +55,7 @@ def update_physics ():
 pygame.init ()
 screen = pygame.display.set_mode([800,600])
 blocks = []
+blocktypes = []
 with open ("block.text", "r") as file:
     for line in file:
         line = line.strip ()
@@ -55,6 +66,7 @@ with open ("block.text", "r") as file:
         height = int(values [3])
         block = pygame.Rect(left,top,width,height)
         blocks.append (block)
+        blocktypes.append (values [4])
 running=True
 state = 'in air'
 x=100.0
@@ -74,8 +86,11 @@ while running==True:
         scroll -= 350+scroll-x
     if scroll < 0:
         scroll = 0.0
-    for block in blocks:
-        pygame.draw.rect(screen, (0,0,255), block.move(-scroll, 0))
+    for i,block in enumerate (blocks):
+        if blocktypes [i] == "good":
+            pygame.draw.rect(screen, (0,0,255), block.move(-scroll, 0))
+        elif blocktypes[i] == "bad":
+            pygame.draw.rect(screen, (0,0,0), block.move(-scroll, 0))
     rect = pygame.Rect(x,y,30,30)
     pygame.draw.rect(screen,(255,0,0),rect.move(-scroll,0))
     ground=pygame.Rect(0,500,800,13)
