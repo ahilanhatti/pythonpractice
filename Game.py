@@ -1,7 +1,19 @@
 import pygame
 class enemy:
-    def __init__(self):
-        pass
+    def __init__(self, x, y, width=30, height=30, speed=2, range_limit=100):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.start_x = x
+        self.speed = speed
+        self.direction = 1
+        self.range_limit = range_limit
+    def move(self):
+        self.rect.x += self.speed * self.direction
+        if abs(self.rect.x - self.start_x) >= self.range_limit:
+            self.direction *= -1
+    def draw(self, surface, scroll):
+        draw_rect = self.rect.copy()
+        draw_rect.x -= scroll
+        pygame.draw.rect(surface, (255, 0, 0), draw_rect)
 def update_physics ():
     global scroll, acc_x, acc_y, vel_x, vel_y, x, y, state
     vel_x += acc_x
@@ -95,6 +107,7 @@ acc_x = 0.0
 acc_y = 10.0
 maxvel_x = 15.0
 maxvel_y = 50.0
+enemy1 = enemy(200, 400)
 scroll = 0.0
 while running==True:
     screen.fill((192,192,192))
@@ -115,6 +128,7 @@ while running==True:
     pygame.draw.rect(screen,(255,0,0),rect.move(-scroll,0))
     ground=pygame.Rect(0,500,800,13)
     pygame.draw.rect(screen,(0,255,0), ground)
+    enemy1.draw(screen, scroll)
     pygame.display.flip()
     pygame.time.delay(50)
     keys = pygame.key.get_pressed()
@@ -130,6 +144,7 @@ while running==True:
     if keys[pygame.K_s]:
         y+=1.0
     update_physics ()
+    enemy1.move()
     for event in pygame.event.get():
         if event.type==pygame.QUIT:
             running=False
